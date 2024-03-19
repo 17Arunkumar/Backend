@@ -1,23 +1,21 @@
 import express, { response } from "express";
 import { MongoClient } from 'mongodb'
 import { ObjectId } from "mongodb";
-import bcrypt from "bcrypt";
-import jwt from "jsonwebtoken";
-
-import cors from 'cors';
-
 const app=express();
 const url="mongodb+srv://arunkumarabde17:oiM1ZINmDcMzIigj@arunkumar.iz0dkdg.mongodb.net/?retryWrites=true&w=majority&appName=Arunkumar";
 const client=new MongoClient(url);
 await client.connect();
 console.log("mongoDB connected Successsfully");
 app.use(express.json());
-app.use(cors());
+import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
+import cors from 'cors';
+app.use(cors())
 
 const auth=(req,res,next)=>{
     try {
         const token=req.header("backend-token"); //keyname:backend-token
-        jwt.verify(token,"college");
+        jwt.verify(token,"student");
         next();
     } catch (error) {
         res.status(401).send({message:error.message});
@@ -89,15 +87,15 @@ app.post("/login",async function(req,res){
         const passwordCheck=await bcrypt.compare(password,mongodbpaassword);
         //console.log(passwordCheck);
         if(passwordCheck){
-            const token=jwt.sign({id:userFind._id},"college"); //jwt token:college
+            const token=jwt.sign({id:userFind._id},"student"); //jwt token:college
             res.status(200).send({token:token});
         }
         else{
-            res.status(400).send("Invalid Password");
+            res.status(400).send({message:"Invalid Password"});
         }
     }
     else{
-        response.status(400).send("Invalid email-id");
+        response.status(400).send({message:"Invalid email-id"});
     }
 });
 
